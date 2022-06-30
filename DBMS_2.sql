@@ -87,3 +87,6 @@ SELECT d.customer_name FROM account a,branch b,depositor d
 WHERE b.branch_name=a.branch_name AND  a.accno=d.loan_number AND b.branch_city='Bangalore' 
 GROUP BY d.customer_name HAVING COUNT(distinct b.branch_name)=(SELECT COUNT(branch_name) FROM branch WHERE branch_city='Bangalore');
 
+delete from account 
+where branch_name 
+IN (select branch_name from branch where branch_city='bangalore');
