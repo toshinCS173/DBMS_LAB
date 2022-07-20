@@ -1,8 +1,5 @@
 create database toshin_airline;
 use toshin_airline;
-create table FLIGHTS(flno int(20),from varchar(25),to varchar(25),distance int(20),departs time,arrives time,price int,
-primary key(flno)
-);
 
 create table Flights(
 flno int,
@@ -69,15 +66,95 @@ insert into Certified values(10,003);
 insert into Certified values(10,002);
 insert into Certified values(20,006);
 
-select 
-select e.eid, max(a.cruisingrange) from employee e, Aircraft a, Certified c having count(c.eid)>3;
+/*Q1.Find the names of aircraft such that all pilots certified to operate them have salaries
+more than Rs.80,000.*/
+
+select distinct a.aname from aircraft a where a.aid
+in ( select c.aid from certified c, employees
+e where
+c.eid = e.eid and not exists(
+select * from employees e1 where e1.eid=e.eid and e1.salary<80000));
+
+/*Q2.For each pilot who is certified for more than three aircrafts, find the eid and the
+maximum cruising range of the aircraft for which she or he is certified.*/
+
+SELECT C.eid, MAX (A.cruisingrange)
+FROM Certified C, Aircraft A
+WHERE C.aid = A.aid
+GROUP BY C.eid
+HAVING COUNT (*)> 3;
+
+/*Q3.Find the names of pilots whose salary is less than the price of the cheapest route
+from Bangalore to Frankfurt.*/
 
 select e.ename from Employee e where e.salary < (select min(f.price) from Flights f where f.source='Bangalore' AND f.dest='Frankfurt' );
 
+/*Q4.For all aircraft with cruising range over 1000 Kms, find the name of the aircraft
+and the average salary of all pilots certified for this aircraft.*/
+
+select avg(e.salary), c.aid from certified c, employees e where c.aid in(
+select aid from aircraft where cruisingrange>1000) and e.eid = c.eid group by c.aid;
+/*OR*/
 select a.aname, avg(e.salary) from Aircraft a,Certified c, Employee e where a.aid=c.aid
 AND a.cruisingrange>1000
 group by a.aid,a.aname;
 
+
+/*Q5.Find the names of pilots certified for some Boeing aircraft.*/
+
 select distinct e.ename from Employee e,Aircraft a, Certified c where e.eid=c.eid
 AND c.aid=a.aid
 AND a.aname='Boeing';
+
+/*Q6.Find the aids of all aircraft that can be used on routes from Bangalore to
+Frankfurt.*/
+SELECT A.aid
+FROM Aircraft A
+WHERE A.cruisingrange &gt;( SELECT MIN (F.distance)
+FROM Flights F
+WHERE F.ffrom = ‘Bangalore’ AND F.tto = ‘Frankfurt’ );
+
+/*Q7.A customer wants to travel from Bangalore to Delhi with no more than two
+changes of flight. List the choice of departure times from Bangalore if the
+customer wants to arrive in Delhi by 6 p.m.*/
+
+SELECT F.flno, F.departs FROM flights F
+WHERE F.flno IN 
+ ( ( SELECT F0.flno FROM flights F0
+WHERE F0.source = 'Bangalore' AND F0.dest =
+'Kolkata' AND extract(hour from F0.arrives) < 18 )
+UNION
+( SELECT F0.flno
+FROM flights F0, flights F1
+WHERE F0.source = 'Bangalore' AND F0.dest <>
+'Kolkata' AND F0.dest = F1.source AND F1.dest
+= 'Kolkata' AND F1.departs > F0.arrives
+AND extract(hour from F1.arrives) <
+18) UNION
+( SELECT F0.flno
+FROM flights F0, flights F1,
+flights F2 WHERE F0.source
+= 'Bangalore' AND F0.dest =
+F1.source
+AND F1.dest =
+F2.source AND
+F2.dest = 'Kolkata' AND
+F0.dest <> 'Kolkata' AND
+F1.dest <> 'Kolkata' AND
+F1.departs > F0.arrives
+AND F2.departs >
+F1.arrives
+AND extract(hour from F2.arrives) < 18));
+
+/*Q8.Print the name and salary of every non-pilot whose salary is more than the
+average salary for pilots.*/
+
+SELECT E.ename, E.salary
+FROM Employees E
+WHERE E.eid NOT IN ( SELECT DISTINCT C.eid
+FROM Certified C )
+AND E.salary >( SELECT AVG (E1.salary)
+FROM Employees E1
+WHERE E1.eid IN
+( SELECT DISTINCT C1.eid
+FROM Certified C1 ) );
