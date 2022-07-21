@@ -111,9 +111,9 @@ AND a.aname='Boeing';
 Frankfurt.*/
 SELECT A.aid
 FROM Aircraft A
-WHERE A.cruisingrange &gt;( SELECT MIN (F.distance)
+WHERE A.cruisingrange >( SELECT MIN (F.distance)
 FROM Flights F
-WHERE F.ffrom = ‘Bangalore’ AND F.tto = ‘Frankfurt’ );
+WHERE F.source = ‘Bangalore’ AND F.dest = ‘Frankfurt’ );
 
 /*Q7.A customer wants to travel from Bangalore to Delhi with no more than two
 changes of flight. List the choice of departure times from Bangalore if the
@@ -151,11 +151,11 @@ AND extract(hour from F2.arrives) < 18));
 average salary for pilots.*/
 
 SELECT E.ename, E.salary
-FROM Employees E
+FROM Employee E
 WHERE E.eid NOT IN ( SELECT DISTINCT C.eid
 FROM Certified C )
 AND E.salary >( SELECT AVG (E1.salary)
-FROM Employees E1
+FROM Employee E1
 WHERE E1.eid IN
 ( SELECT DISTINCT C1.eid
 FROM Certified C1 ) );
