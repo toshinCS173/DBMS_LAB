@@ -78,11 +78,12 @@ select * from employees e1 where e1.eid=e.eid and e1.salary<80000));
 /*Q2.For each pilot who is certified for more than three aircrafts, find the eid and the
 maximum cruising range of the aircraft for which she or he is certified.*/
 
-SELECT C.eid, MAX (A.cruisingrange)
-FROM Certified C, Aircraft A
-WHERE C.aid = A.aid
-GROUP BY C.eid
-HAVING COUNT (*)> 3;
+select x.eid,x.max_range from
+(select c.eid,count(distinct a.aid),max(a.cruisingrange) as max_range
+from Certified c join Aircraft a
+on c.aid=a.aid
+group by c.eid
+having count(distinct a.aid)>3 ) x;
 
 /*Q3.Find the names of pilots whose salary is less than the price of the cheapest route
 from Bangalore to Frankfurt.*/
