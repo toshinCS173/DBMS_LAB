@@ -108,12 +108,8 @@ AND c.aid=a.aid
 AND a.aname='Boeing';
 
 /*Q6.Find the aids of all aircraft that can be used on routes from Bangalore to
-Frankfurt.*/
-SELECT A.aid
-FROM Aircraft A
-WHERE A.cruisingrange >( SELECT MIN (F.distance)
-FROM Flights F
-WHERE F.source = ‘Bangalore’ AND F.dest = ‘Frankfurt’ );
+delhi.*/
+SELECT a.aid FROM aircraft a WHERE a.cruisingrange> (SELECT MIN(f.dist) FROM flights f WHERE f.source='Bangalore' AND f.dest='Delhi');
 
 /*Q7.A customer wants to travel from Bangalore to Delhi with no more than two
 changes of flight. List the choice of departure times from Bangalore if the
