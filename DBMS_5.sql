@@ -70,10 +70,10 @@ insert into Certified values(20,006);
 more than Rs.80,000.*/
 
 select distinct a.aname from aircraft a where a.aid
-in ( select c.aid from certified c, employees
+in ( select c.aid from certified c, employee
 e where
 c.eid = e.eid and not exists(
-select * from employees e1 where e1.eid=e.eid and e1.salary<80000));
+select * from employee e1 where e1.eid=e.eid and e1.salary<80000));
 
 /*Q2.For each pilot who is certified for more than three aircrafts, find the eid and the
 maximum cruising range of the aircraft for which she or he is certified.*/
@@ -93,12 +93,14 @@ select e.ename from Employee e where e.salary < (select min(f.price) from Flight
 /*Q4.For all aircraft with cruising range over 1000 Kms, find the name of the aircraft
 and the average salary of all pilots certified for this aircraft.*/
 
-select avg(e.salary), c.aid from certified c, employees e where c.aid in(
+select avg(e.salary), c.aid from certified c, employee e where c.aid in(
 select aid from aircraft where cruisingrange>1000) and e.eid = c.eid group by c.aid;
-/*OR*/
+/*or*/
 select a.aname, avg(e.salary) from Aircraft a,Certified c, Employee e where a.aid=c.aid
 AND a.cruisingrange>1000
 group by a.aid,a.aname;
+/*or*/
+SELECT a.aid,a.aname,AVG(e.salary) FROM aircraft a,certified c,employee e WHERE a.aid=c.aid AND c.eid=e.eid AND a.cruisingrange>1000 GROUP BY a.aid,a.aname;
 
 
 /*Q5.Find the names of pilots certified for some Boeing aircraft.*/
