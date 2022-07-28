@@ -59,7 +59,7 @@ INSERT INTO catalogue1 VALUES
           (4006,'Angels and Demons',1004,2003,3001,2003,350),
           (4007,'Artificial Intelligence',1003,2002,3002,1970,500) ;
           
-          select * from catalogue1;
+          select * from author1;
           
          
 
@@ -74,11 +74,13 @@ INSERT INTO orderdetails1 (order_id,book_id,quantity) VALUES
           (5008,4004,3) ;
 /*3: Give the details of the authors who have 2 or more books in the catalog and the price of the books in the catalog and the year of publication is after 2000
  */
- SELECT *  FROM author1
-          WHERE author1_id IN
-          (SELECT author1_id FROM catalogue1 WHERE
+ 
+ desc catalogue1;
+ SELECT A.author1_id,A.author1_name,A.author1_city,A.author1_country, C.price FROM author1 A, catalogue1 C
+          WHERE a.author1_id IN
+          (SELECT distinct author1_id FROM catalogue1 WHERE
           year>2000 
-          GROUP BY author1_id HAVING COUNT(*)>1);
+          GROUP BY  author1_id HAVING COUNT(*)>1);
           
  /*4: Find the author1 of the book which has maximum sales.*/
  SELECT author1_name FROM author1 a,catalogue1 c WHERE a.author1_id=c.author1_id AND book_id IN (SELECT book_id FROM orderdetails1 WHERE quantity= (SELECT MAX(quantity) FROM orderdetails1));
